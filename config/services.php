@@ -14,6 +14,11 @@ return [
     |
     */
 
+    'passport' => [
+        'client_name' => env('OAUTH_CLIENT_NAME', 'local'),
+        'client_secret' => env('OAUTH_CLIENT_SECRET', 'secret'),
+    ],
+
     'postmark' => [
         'token' => env('POSTMARK_TOKEN'),
     ],
