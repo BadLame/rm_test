@@ -2,7 +2,7 @@
 
 namespace App\Models\Enums\User;
 
-enum SitePartitionAccessEnum: string
+enum SiteModulesAccessEnum: string
 {
     case ADMINISTRATIVE = 'administrative';
     case ANALYTICS = 'analytics';

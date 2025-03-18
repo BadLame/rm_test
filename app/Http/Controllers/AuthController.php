@@ -14,6 +14,7 @@ class AuthController extends Controller
      */
     function login(LoginRequest $request)
     {
+        /** @var User $user */
         $user = User::query()->firstWhere('login', $request->login);
 
         if (!$user || !Hash::check($request->password, $user->password)) {
@@ -21,7 +22,6 @@ class AuthController extends Controller
         }
 
         $tokenResult = $user->createToken('Personal Access Token');
-
 
         return response()->json([
             'access_token' => $tokenResult->accessToken,

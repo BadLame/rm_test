@@ -2,8 +2,8 @@
 
 namespace App\Services;
 
-use App\Actions\CreateUserAction;
-use App\Actions\UpdateUserAction;
+use App\Actions\User\CreateUserAction;
+use App\Actions\User\UpdateUserAction;
 use App\Dto\UserDto;
 use App\Models\User;
 

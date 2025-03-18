@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Enums\User\SitePartitionAccessEnum;
+use App\Models\Enums\User\SiteModulesAccessEnum;
 use App\Models\User;
 use App\ValueObjects\User\SitePartitionAccessVO;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -41,15 +41,15 @@ class UserFactory extends Factory
 
     private function getSitePartitionsAccess(bool $isAdmin): SitePartitionAccessVO
     {
-        $partitionsAccess = collect(array_column(SitePartitionAccessEnum::cases(), 'value'))
+        $modulesAccess = collect(array_column(SiteModulesAccessEnum::cases(), 'value'))
             ->when(
                 $isAdmin,
-                fn (Collection $partitions) => $partitions->mapWithKeys(fn (string $partition) => [$partition => true]),
-                fn (Collection $partitions) => $partitions->mapWithKeys(fn (string $partition) => [
-                    $partition => ($partition === SitePartitionAccessEnum::ADMINISTRATIVE->value) ? false : !rand(0, 1),
+                fn (Collection $modules) => $modules->mapWithKeys(fn (string $partition) => [$partition => true]),
+                fn (Collection $modules) => $modules->mapWithKeys(fn (string $module) => [
+                    $module => ($module === SiteModulesAccessEnum::ADMINISTRATIVE->value) ? false : !rand(0, 1),
                 ])
             );
 
-        return new SitePartitionAccessVO($partitionsAccess->toJson());
+        return new SitePartitionAccessVO($modulesAccess->toJson());
     }
 }
