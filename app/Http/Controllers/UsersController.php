@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Dto\UserUpdateDto;
+use App\Dto\UserDto;
 use App\Http\Requests\BlockRequest;
 use App\Http\Requests\ChangePasswordRequest;
+use App\Http\Requests\CreateRequest;
 use App\Http\Requests\SearchRequest;
 use App\Http\Requests\UpdateRequest;
 use App\Http\Resources\UserBaseResource;
@@ -43,26 +44,38 @@ class UsersController extends Controller
 
     /**
      * @lrd:start
+     * Создание нового пользователя (доступно только администратору)
+     * @lrd:end
+     */
+    function create(CreateRequest $request, UserService $userService): UserDetailResource
+    {
+        $user = $userService->create(UserDto::fromArray($request->validated()));
+
+        return new UserDetailResource($user);
+    }
+
+    /**
+     * @lrd:start
      * Редактирование имени/фамилии пользователя
      * @lrd:end
      */
     function update(UpdateRequest $request, User $user, UserService $userService): UserDetailResource
     {
-        $user = $userService->update($user, UserUpdateDto::fromArray($request->validated()));
+        $user = $userService->update($user, UserDto::fromArray($request->validated()));
 
         return new UserDetailResource($user);
     }
 
     function block(BlockRequest $request, User $user, UserService $userService): UserDetailResource
     {
-        $user = $userService->update($user, UserUpdateDto::fromArray($request->validated()));
+        $user = $userService->update($user, UserDto::fromArray($request->validated()));
 
         return new UserDetailResource($user);
     }
 
     function changePassword(ChangePasswordRequest $request, User $user, UserService $userService): UserDetailResource
     {
-        $user = $userService->update($user, UserUpdateDto::fromArray($request->validated()));
+        $user = $userService->update($user, UserDto::fromArray($request->validated()));
 
         return new UserDetailResource($user);
     }

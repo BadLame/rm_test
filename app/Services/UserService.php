@@ -2,13 +2,19 @@
 
 namespace App\Services;
 
+use App\Actions\CreateUserAction;
 use App\Actions\UpdateUserAction;
-use App\Dto\UserUpdateDto;
+use App\Dto\UserDto;
 use App\Models\User;
 
 class UserService
 {
-    function update(User $user, UserUpdateDto $dto): User
+    function create(UserDto $dto): User
+    {
+        return app(CreateUserAction::class)->exec($dto);
+    }
+
+    function update(User $user, UserDto $dto): User
     {
         return app(UpdateUserAction::class)->exec($user, $dto);
     }

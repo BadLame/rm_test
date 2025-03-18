@@ -4,6 +4,7 @@ namespace Tests\Feature\Controllers;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Tests\TestCase;
 
@@ -13,6 +14,8 @@ class UsersControllerTest extends TestCase
 
     protected User $admin;
     protected User $user;
+
+    // index
 
     function testIndexDontReturnsListForBlockedUser()
     {
@@ -29,7 +32,7 @@ class UsersControllerTest extends TestCase
             ->getJson(route('api.users.index'))
             ->assertSuccessful()
             ->assertExactJsonStructure([
-                'data' => ['*' => ['id', 'name', 'surname']],
+                'data' => ['*' => ['id', 'name', 'surname', 'login']],
                 // проверить, что пришла информация по пагинации
                 'links',
                 'meta',
@@ -60,6 +63,8 @@ class UsersControllerTest extends TestCase
             ->assertJsonFragment($userBaseInfoFn($userBySurname))
             ->assertJsonMissing($userBaseInfoFn($userByName));
     }
+
+    // show
 
     function testShowFailsForBlockedUser()
     {
@@ -92,6 +97,7 @@ class UsersControllerTest extends TestCase
                     'id',
                     'name',
                     'surname',
+                    'login',
                     'is_admin',
                     'blocked_at',
                     'created_at',
@@ -110,6 +116,7 @@ class UsersControllerTest extends TestCase
                     'id',
                     'name',
                     'surname',
+                    'login',
                     'is_admin',
                     'blocked_at',
                     'created_at',
@@ -118,9 +125,12 @@ class UsersControllerTest extends TestCase
             ]);
     }
 
+    // update
+
     function testUpdateByAdminCanChangeAnotherUserCredentials()
     {
         $newUserData = [
+            'login' => Str::random(),
             'name' => Str::random(),
             'surname' => Str::random(),
             'is_admin' => 1,
@@ -136,6 +146,7 @@ class UsersControllerTest extends TestCase
     function testUpdateCredentialsByTheOwnerShouldSucceed()
     {
         $newUserData = [
+            'login' => Str::random(),
             'name' => Str::random(),
             'surname' => Str::random(),
             'is_admin' => 1, // Для доп проверки, что пользователь не сможет сделать себя админом
@@ -156,6 +167,7 @@ class UsersControllerTest extends TestCase
     {
         $anotherUser = User::factory()->create();
         $newUserData = [
+            'login' => Str::random(),
             'name' => Str::random(),
             'surname' => Str::random(),
             'is_admin' => 1,
@@ -167,6 +179,22 @@ class UsersControllerTest extends TestCase
 
         $this->assertDatabaseHas('users', $anotherUser->only(['id', 'name', 'surname', 'is_admin']));
     }
+
+    function testUpdateCantChangeLoginToExisting()
+    {
+        $existingUser = User::factory()->create();
+        $newUserData = [
+            'login' => $existingUser->login,
+            'name' => Str::random(),
+            'surname' => Str::random(),
+        ];
+
+        $this->actingAs($this->user, 'api')
+            ->postJson(route('api.users.update', ['user' => $this->user->id]), $newUserData)
+            ->assertJsonValidationErrorFor('login');
+    }
+
+    // block
 
     // todo Проверить, когда будут настроены права доступа
     function testBlockShouldNotBeAvailableForOrdinaryUser()
@@ -192,6 +220,8 @@ class UsersControllerTest extends TestCase
 
         $this->assertEmpty($this->user->fresh()->blocked_at);
     }
+
+    // changePassword
 
     // todo Проверить, когда будут настроены права доступа
     function testChangePasswordForAnotherUserShouldFail()
@@ -232,6 +262,43 @@ class UsersControllerTest extends TestCase
             ->assertSuccessful();
 
         $this->assertNotEquals($this->user->password, $this->user->fresh()->password);
+    }
+
+    // create
+
+    function testCreateNewUserByAdmin()
+    {
+        $newUserData = [
+            'login' => Str::random(),
+            'name' => Str::random(),
+            'surname' => Str::random(),
+            'password' => 'My_c00L_pass',
+            'is_admin' => rand(0, 1),
+        ];
+
+        $this->actingAs($this->admin, 'api')
+            ->postJson(route('api.users.create'), $newUserData)
+            ->dump()
+            ->assertSuccessful();
+
+        $this->assertDatabaseHas('users', Arr::except($newUserData, ['password']));
+    }
+
+    function testCreateNewUserByOrdinaryUserIsUnauthorized()
+    {
+        $newUserData = [
+            'login' => Str::random(),
+            'name' => Str::random(),
+            'surname' => Str::random(),
+            'password' => 'My_c00L_pass',
+            'is_admin' => rand(0, 1),
+        ];
+
+        $this->actingAs($this->user, 'api')
+            ->postJson(route('api.users.create'), $newUserData)
+            ->assertStatus(401);
+
+        $this->assertDatabaseMissing('users', Arr::except($newUserData, ['password']));
     }
 
     protected function setUp(): void

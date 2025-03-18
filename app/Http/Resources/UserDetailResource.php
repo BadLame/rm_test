@@ -17,6 +17,7 @@ class UserDetailResource extends JsonResource
             'id' => $user->id,
             'name' => $user->name,
             'surname' => $user->surname,
+            'login' => $user->login,
             'is_admin' => (bool)$user->is_admin,
             'blocked_at' => $user->blocked_at?->timestamp,
             'created_at' => $user->created_at->timestamp,

@@ -17,6 +17,7 @@ class UserBaseResource extends JsonResource
             'id' => $user->id,
             'name' => $user->name,
             'surname' => $user->surname,
+            'login' => $user->login,
         ];
     }
 }
