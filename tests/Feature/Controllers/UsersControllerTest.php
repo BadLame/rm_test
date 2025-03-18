@@ -19,7 +19,7 @@ class UsersControllerTest extends TestCase
 
     function testIndexDontReturnsListForBlockedUser()
     {
-        $user = User::factory()->blocked()->create();
+        $user = User::factory()->admin(false)->blocked()->create();
 
         $this->actingAs($user, 'api')
             ->getJson(route('api.users.index'))
@@ -75,7 +75,6 @@ class UsersControllerTest extends TestCase
             ->assertStatus(401);
     }
 
-    // todo Проверить, когда будут настроены права доступа
     function testShowAnotherUserFailsForOrdinaryUser()
     {
         $anotherUser = User::factory()->create();
@@ -85,7 +84,7 @@ class UsersControllerTest extends TestCase
             ->assertStatus(401);
     }
 
-    function testShowAnotherUserGivesInfoToAdmin()
+    function testShowGivesUserInfoToAdmin()
     {
         $anotherUser = User::factory()->create();
 
@@ -140,7 +139,7 @@ class UsersControllerTest extends TestCase
             ->postJson(route('api.users.update', ['user' => $this->user->id]), $newUserData)
             ->assertSuccessful();
 
-        $this->assertDatabaseHas('users', array_merge(['id' => $this->user->id], $newUserData));
+        $this->assertDatabaseHas('users', array_merge($newUserData, ['id' => $this->user->id]));
     }
 
     function testUpdateCredentialsByTheOwnerShouldSucceed()
@@ -162,7 +161,6 @@ class UsersControllerTest extends TestCase
         ]));
     }
 
-    // todo Проверить, когда будут настроены права доступа
     function testUpdateCredentialsOfAnotherUserShouldFail()
     {
         $anotherUser = User::factory()->create();
@@ -196,7 +194,6 @@ class UsersControllerTest extends TestCase
 
     // block
 
-    // todo Проверить, когда будут настроены права доступа
     function testBlockShouldNotBeAvailableForOrdinaryUser()
     {
         $this->actingAs($this->user, 'api')
@@ -223,7 +220,6 @@ class UsersControllerTest extends TestCase
 
     // changePassword
 
-    // todo Проверить, когда будут настроены права доступа
     function testChangePasswordForAnotherUserShouldFail()
     {
         $newPasswd = 'Good_password_100';
@@ -278,7 +274,6 @@ class UsersControllerTest extends TestCase
 
         $this->actingAs($this->admin, 'api')
             ->postJson(route('api.users.create'), $newUserData)
-            ->dump()
             ->assertSuccessful();
 
         $this->assertDatabaseHas('users', Arr::except($newUserData, ['password']));
@@ -306,6 +301,6 @@ class UsersControllerTest extends TestCase
         parent::setUp();
 
         $this->admin = User::factory()->admin()->create();
-        $this->user = User::factory()->blocked(false)->create();
+        $this->user = User::factory()->admin(false)->blocked(false)->create();
     }
 }

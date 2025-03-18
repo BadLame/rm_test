@@ -1,27 +1,42 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UsersController;
 use App\Http\Middleware\Auth\EnsureUserNotBlockedMiddleware as UserNotBlocked;
+use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::name('api.')->group(function () {
-    require 'auth.php';
+    Route::name('auth.')->group(function () {
+        Route::middleware('guest')->post('/login', [AuthController::class, 'login'])->name('login');
+        Route::middleware('auth:api')->post('/logout', [AuthController::class, 'logout'])->name('logout');
+    });
 
-    Route::middleware(['auth:api', UserNotBlocked::class])->group(function () {
-        Route::get('/users', [UsersController::class, 'index'])->name('users.index');
-        Route::get('/users/{user}', [UsersController::class, 'show'])
-            ->where(['user' => '[0-9]+'])
-            ->name('users.show');
+    Route::middleware(['auth:api', UserNotBlocked::class])->name('users.')->group(function () {
+        Route::get('/users', [UsersController::class, 'index'])->name('index');
 
-        Route::post('/users', [UsersController::class, 'create'])->name('users.create');
-        Route::post('/users/{user}', [UsersController::class, 'update'])
+        Route::middleware('can:view,user')
+            ->get('/users/{user}', [UsersController::class, 'show'])
             ->where(['user' => '[0-9]+'])
-            ->name('users.update');
-        Route::post('/users/{user}/toggle-block', [UsersController::class, 'block'])
+            ->name('show');
+
+        Route::middleware('can:create,' . User::class)
+            ->post('/users', [UsersController::class, 'create'])
+            ->name('create');
+
+        Route::middleware('can:block,user')
+            ->post('/users/{user}/toggle-block', [UsersController::class, 'block'])
             ->where(['user' => '[0-9]+'])
-            ->name('users.toggle-block');
-        Route::post('/users/{user}/change-password', [UsersController::class, 'changePassword'])
-            ->where(['user' => '[0-9]+'])
-            ->name('users.change-password');
+            ->name('toggle-block');
+
+        Route::middleware('can:update,user')->group(function () {
+            Route::post('/users/{user}', [UsersController::class, 'update'])
+                ->where(['user' => '[0-9]+'])
+                ->name('update');
+
+            Route::post('/users/{user}/change-password', [UsersController::class, 'changePassword'])
+                ->where(['user' => '[0-9]+'])
+                ->name('change-password');
+        });
     });
 });

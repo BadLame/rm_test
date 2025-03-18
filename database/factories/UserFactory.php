@@ -36,7 +36,7 @@ class UserFactory extends Factory
 
     function admin(bool $isAdmin = true): self
     {
-        return $this->state(['is_admin' => $isAdmin, 'blocked_at' => null]);
+        return $this->state(['is_admin' => $isAdmin]);
     }
 
     private function getSitePartitionsAccess(bool $isAdmin): SitePartitionAccessVO
