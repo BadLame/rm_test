@@ -16,6 +16,7 @@ php artisan test
 
 ## Дополнительно
 
+- Postman коллекция находится в корне в файле `postman_collection.json`
 - По роуту `/request-docs` можно потрогать доступные по API роуты
 
 ## Тестовое задание: Laravel

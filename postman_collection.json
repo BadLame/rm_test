@@ -1,0 +1,252 @@
+{
+	"info": {
+		"_postman_id": "a3bfb151-2181-4c94-86d1-89b0d7c78c8c",
+		"name": "rm_test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "26481180",
+		"_collection_link": "https://blue-satellite-20005.postman.co/workspace/My-Workspace~3c0aff40-2a65-459c-8153-6f11bc262926/collection/26481180-a3bfb151-2181-4c94-86d1-89b0d7c78c8c?action=share&source=collection_link&creator=26481180"
+	},
+	"item": [
+		{
+			"name": "Логин",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"admin\",\n    \"password\": \"admin\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost/api/login"
+			},
+			"response": []
+		},
+		{
+			"name": "Логаут",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{auth_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "http://localhost/api/logout",
+				"description": "Logout"
+			},
+			"response": []
+		},
+		{
+			"name": "Список пользователей",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{auth_token}}"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost/api/users?search=&page=",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"path": [
+						"api",
+						"users"
+					],
+					"query": [
+						{
+							"key": "search",
+							"value": ""
+						},
+						{
+							"key": "page",
+							"value": ""
+						}
+					]
+				},
+				"description": "Список пользователей с пагинацией и возможностью поиска"
+			},
+			"response": []
+		},
+		{
+			"name": "Создание пользователя",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{auth_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"login\": \"login\",\n    \"name\": \"name\",\n    \"surname\": \"surname\",\n    \"password\": \"Pa55w_rd\",\n    \"is_admin\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost/api/users",
+				"description": "Создание нового пользователя"
+			},
+			"response": []
+		},
+		{
+			"name": "Полная информация по пользователю",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{auth_token}}"
+					}
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": "http://localhost/api/users/1",
+				"description": "Просмотр полной информации пользователя (только своей или любой для админа)"
+			},
+			"response": []
+		},
+		{
+			"name": "Редактирование пользователя",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{auth_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"login\": \"Новый логин\",\n  \"name\": \"Имя\",\n  \"surname\": \"Фамилия\",\n  \"is_admin\": 0\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost/api/users/2",
+				"description": "Редактирование информации пользователя"
+			},
+			"response": []
+		},
+		{
+			"name": "Смена пароля",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": {
+						"token": "{{auth_token}}"
+					}
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"password\": \"N3w_passwd\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "http://localhost/api/users/2/change-password",
+				"description": "Смена пароля"
+			},
+			"response": []
+		}
+	]
+}
