@@ -29,6 +29,11 @@ class UserFactory extends Factory
         ];
     }
 
+    function blocked(bool $isBlocked = true): self
+    {
+        return $this->state(['blocked_at' => $isBlocked ? now()->subDays(rand(0, 30)) : null]);
+    }
+
     private function getSitePartitionsAccess(bool $isAdmin): SitePartitionAccessVO
     {
         $partitionsAccess = collect(array_column(SitePartitionAccessEnum::cases(), 'value'))

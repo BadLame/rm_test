@@ -13,7 +13,7 @@ class AuthControllerTest extends TestCase
 
     function testLoginUserWithValidCredentialsCreatesAuthToken(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->blocked(false)->create();
         $authData = [
             'login' => $user->login,
             'password' => 'password',
@@ -30,7 +30,7 @@ class AuthControllerTest extends TestCase
 
     function testLoginUserWithInvalidCredentialsThrowsAuthException(): void
     {
-        $user = User::factory()->create();
+        $user = User::factory()->blocked(false)->create();
         $authData = [
             'login' => $user->login,
             'password' => Str::random(),
@@ -42,7 +42,7 @@ class AuthControllerTest extends TestCase
 
     function testLogoutRevokesToken()
     {
-        $user = User::factory()->create();
+        $user = User::factory()->blocked(false)->create();
 
         // Залогиниться, чтобы у пользователя появился токен
         $authToken = $this->postJson(route('api.auth.login'), ['login' => $user->login, 'password' => 'password'])
