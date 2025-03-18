@@ -16,7 +16,7 @@ class EnsureUserNotBlockedMiddleware
         $user = $request->user();
 
         if (!$user || $user->blocked_at) {
-            throw new UnauthorizedHttpException('blocked');
+            return response()->noContent(401);
         }
 
         return $next($request);

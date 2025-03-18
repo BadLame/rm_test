@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Casts\User\SitePartitionAccessCast;
+use App\Models\Queries\UserQuery;
 use App\ValueObjects\User\SitePartitionAccessVO;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -18,11 +19,14 @@ use Laravel\Passport\HasApiTokens;
  * @property string $password
  * @property Carbon|null $blocked_at
  * @property bool $is_admin
- * @property SitePartitionAccessVO $access Хранит разрешения на доступ к разделам сайта
+ * @property SitePartitionAccessVO $access Хранит разрешения на доступ к разделам сайта // fixme remove
  * @property Carbon $updated_at
  * @property Carbon $created_at
  *
  * @method static UserFactory factory($count = null, $state = [])
+ * @method static UserQuery|User query()
+ *
+ * @mixin UserQuery
  */
 class User extends Authenticatable
 {
@@ -31,7 +35,6 @@ class User extends Authenticatable
     protected $attributes = [
         'is_admin' => false,
     ];
-
 
     protected $casts = [
         'is_admin' => 'boolean',
@@ -53,4 +56,11 @@ class User extends Authenticatable
         'password',
         'is_admin',
     ];
+
+    // Misc
+
+    function newEloquentBuilder($query): UserQuery
+    {
+        return new UserQuery($query);
+    }
 }
