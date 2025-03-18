@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Laravel\Passport\Client;
+use Laravel\Passport\PersonalAccessClient;
 
 class AuthClientSeeder extends Seeder
 {
@@ -11,20 +12,25 @@ class AuthClientSeeder extends Seeder
     {
         $clientName = config('services.passport.client_name');
 
-        Client::query()
+        $client = Client::query()
             ->where('name', $clientName)
             ->firstOr(function () use ($clientName) {
-                (new Client)
+                $client = (new Client)
                     ->forceFill([
                         'name' => $clientName,
                         'secret' => config('services.passport.client_secret'),
                         'provider' => 'users',
                         'redirect' => config('app.url'),
-                        'personal_access_client' => false,
+                        'personal_access_client' => true,
                         'password_client' => true,
                         'revoked' => false,
-                    ])
-                    ->save();
+                    ]);
+                $client->save();
+
+                return $client;
             });
+
+        PersonalAccessClient::query()
+            ->firstOrCreate(['client_id' => $client->id]);
     }
 }

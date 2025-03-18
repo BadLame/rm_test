@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Route;
 
-require_once 'auth.php';
+Route::name('api.')->group(function () {
+    require 'auth.php';
 
-Route::middleware('auth:api')->group(function () {
-    // todo
+    Route::middleware('auth:api')->group(function () {
+        // todo
+    });
 });
