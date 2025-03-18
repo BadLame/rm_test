@@ -13,4 +13,14 @@ Route::name('api.')->group(function () {
             ->where(['user' => '[0-9]+'])
             ->name('users.show');
     });
+
+    Route::post('/users/{user}', [UsersController::class, 'update'])
+        ->where(['user' => '[0-9]+'])
+        ->name('users.update');
+    Route::post('/users/{user}/toggle-block', [UsersController::class, 'block'])
+        ->where(['user' => '[0-9]+'])
+        ->name('users.toggle-block');
+    Route::post('/users/{user}/change-password', [UsersController::class, 'changePassword'])
+        ->where(['user' => '[0-9]+'])
+        ->name('users.change-password');
 });

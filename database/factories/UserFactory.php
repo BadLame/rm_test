@@ -34,6 +34,11 @@ class UserFactory extends Factory
         return $this->state(['blocked_at' => $isBlocked ? now()->subDays(rand(0, 30)) : null]);
     }
 
+    function admin(bool $isAdmin = true): self
+    {
+        return $this->state(['is_admin' => $isAdmin, 'blocked_at' => null]);
+    }
+
     private function getSitePartitionsAccess(bool $isAdmin): SitePartitionAccessVO
     {
         $partitionsAccess = collect(array_column(SitePartitionAccessEnum::cases(), 'value'))
